@@ -18,7 +18,7 @@ export function downloadWorkbook(sheets: SheetSpec[], filename: string) {
   for (const sheet of sheets) {
     const rows = sheet.rows.length ? sheet.rows : [{ Info: "No data" }];
     const ws = XLSX.utils.json_to_sheet(rows);
-    const widths = Object.keys(rows[0]).map((key) => ({
+    const widths = Object.keys(rows[0] ?? {}).map((key) => ({
       wch: Math.min(
         40,
         Math.max(key.length + 2, ...rows.map((r) => String(r[key] ?? "").length + 2)),
