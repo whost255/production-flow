@@ -67,11 +67,16 @@ function PanelConfig() {
     return (stages ?? []).find((s) => s.panel_id === panelId && s.stage === stage);
   }
 
-  async function savePanel(
-    panelId: string,
-    patch: Record<string, unknown>,
-    description: string,
-  ) {
+  type PanelPatch = {
+    name?: string;
+    part_number?: string;
+    part_area?: number;
+    part_weight?: number;
+    sequence?: number;
+    is_active?: boolean;
+  };
+
+  async function savePanel(panelId: string, patch: PanelPatch, description: string) {
     setBusy(panelId);
     const { error } = await supabase.from("panels").update(patch).eq("id", panelId);
     setBusy(null);
