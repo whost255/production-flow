@@ -39,7 +39,7 @@ export const Route = createFileRoute("/_authenticated/projects/$projectId/panels
       },
     ],
   }),
-  component: PanelConfig;
+  component: PanelConfig,
 });
 
 function PanelConfig() {
