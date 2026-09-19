@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/analytics")({
       },
     ],
   }),
-  component: Analytics;
+  component: Analytics,
 });
 
 function Analytics() {
