@@ -125,12 +125,12 @@ function Admin() {
   return (
     <AppShell title="Administration" breadcrumb="Production Tracker · Admin">
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-6">
-        <Stat label="Users" value={stats?.users_total ?? 0} />
-        <Stat label="Active users" value={stats?.users_active ?? 0} />
-        <Stat label="Projects" value={stats?.projects_total ?? 0} />
-        <Stat label="Active projects" value={stats?.projects_active ?? 0} />
-        <Stat label="Panels" value={stats?.panels_total ?? 0} />
-        <Stat label="Records" value={stats?.records_total ?? 0} />
+        <Stat label="Users" value={stats?.['users_total'] ?? 0} />
+        <Stat label="Active users" value={stats?.['users_active'] ?? 0} />
+        <Stat label="Projects" value={stats?.['projects_total'] ?? 0} />
+        <Stat label="Active projects" value={stats?.['projects_active'] ?? 0} />
+        <Stat label="Panels" value={stats?.['panels_total'] ?? 0} />
+        <Stat label="Records" value={stats?.['records_total'] ?? 0} />
       </section>
 
       <Tabs defaultValue="users" className="mt-4">
@@ -216,14 +216,14 @@ function Admin() {
 
         <TabsContent value="system">
           <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <Stat label="Completed records" value={stats?.records_completed ?? 0} />
-            <Stat label="WIP records" value={stats?.records_wip ?? 0} />
-            <Stat label="On hold" value={stats?.records_hold ?? 0} />
-            <Stat label="Rework" value={stats?.records_rework ?? 0} />
-            <Stat label="Completed projects" value={stats?.projects_completed ?? 0} />
-            <Stat label="Projects on hold" value={stats?.projects_hold ?? 0} />
-            <Stat label="Archived projects" value={stats?.projects_archived ?? 0} />
-            <Stat label="Disabled users" value={stats?.users_inactive ?? 0} />
+            <Stat label="Completed records" value={stats?.['records_completed'] ?? 0} />
+            <Stat label="WIP records" value={stats?.['records_wip'] ?? 0} />
+            <Stat label="On hold" value={stats?.['records_hold'] ?? 0} />
+            <Stat label="Rework" value={stats?.['records_rework'] ?? 0} />
+            <Stat label="Completed projects" value={stats?.['projects_completed'] ?? 0} />
+            <Stat label="Projects on hold" value={stats?.['projects_hold'] ?? 0} />
+            <Stat label="Archived projects" value={stats?.['projects_archived'] ?? 0} />
+            <Stat label="Disabled users" value={stats?.['users_inactive'] ?? 0} />
           </div>
         </TabsContent>
 
