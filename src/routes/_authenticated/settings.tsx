@@ -43,9 +43,8 @@ function Settings() {
     setBusy(true);
     const { error } = await supabase.auth.updateUser({
       password,
-      // @ts-expect-error current_password is supported by Lovable Cloud auth
       current_password: currentPassword,
-    });
+    } as Parameters<typeof supabase.auth.updateUser>[0]);
     setBusy(false);
     if (error) {
       toast.error(
