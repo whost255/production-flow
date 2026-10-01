@@ -271,6 +271,7 @@ export function AuthScreen() {
                   {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
                   {busy ?? "Login"}
                 </Button>
+                {googleBlock}
                 <button
                   type="button"
                   onClick={() => setMode("forgot")}
@@ -320,8 +321,9 @@ export function AuthScreen() {
                   {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
                   {busy ?? "Create account"}
                 </Button>
+                {googleBlock}
                 <p className="text-center text-xs text-muted-foreground">
-                  New accounts start with view-only access until an administrator assigns a role.
+                  New accounts stay pending until an administrator assigns a role.
                 </p>
               </form>
             </TabsContent>
