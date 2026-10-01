@@ -436,6 +436,11 @@ export type Database = {
         | "production"
         | "qc"
         | "viewer"
+        | "pending"
+        | "estimator"
+        | "procurement"
+        | "finance"
+        | "management"
       prod_stage:
         | "lamination"
         | "demould"
@@ -594,6 +599,11 @@ export const Constants = {
         "production",
         "qc",
         "viewer",
+        "pending",
+        "estimator",
+        "procurement",
+        "finance",
+        "management",
       ],
       prod_stage: [
         "lamination",
