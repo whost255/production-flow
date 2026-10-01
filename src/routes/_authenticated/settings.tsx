@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { logAudit, useMe } from "@/lib/auth";
+import { logAudit, perms, useMe } from "@/lib/auth";
 import { ROLE_LABEL } from "@/lib/domain";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -129,6 +129,22 @@ function Settings() {
             always the same on every device.
           </p>
         </GlassPanel>
+
+        {perms.isAdmin(me?.roles) && (
+          <GlassPanel className="p-5 lg:col-span-2">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="font-display text-lg font-bold tracking-tight">Users</h2>
+                <p className="text-sm text-muted-foreground">
+                  Assign roles and activate or deactivate accounts.
+                </p>
+              </div>
+              <Button asChild className="rounded-full">
+                <Link to="/admin">Manage users</Link>
+              </Button>
+            </div>
+          </GlassPanel>
+        )}
       </div>
     </AppShell>
   );
