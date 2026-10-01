@@ -72,19 +72,7 @@ function ProjectsPage() {
   const visible = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
 
   return (
-    <AppShell
-      title="Projects"
-      breadcrumb="Production Tracker · Projects"
-      actions={
-        perms.canCreateProject(me?.roles) ? (
-          <Button asChild className="rounded-full">
-            <Link to="/projects/new">
-              <Plus className="mr-1 size-4" /> New Project
-            </Link>
-          </Button>
-        ) : null
-      }
-    >
+    <AppShell title="Projects" breadcrumb="Production Tracker · Projects">
       <GlassPanel className="p-4">
         <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">

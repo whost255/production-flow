@@ -74,19 +74,29 @@ export const PROJECT_STATUS_CLASS: Record<string, string> = {
 
 export const COUNTRIES = ["India", "Europe", "UAE", "Other"] as const;
 
+/** Roles an administrator can assign. */
 export const ROLES = [
-  { value: "admin", label: "Admin" },
+  { value: "pending", label: "Pending / Unassigned" },
+  { value: "admin", label: "Administrator" },
   { value: "project_manager", label: "Project Manager" },
-  { value: "engineer", label: "Engineer" },
+  { value: "estimator", label: "Estimator" },
+  { value: "procurement", label: "Procurement" },
   { value: "production", label: "Production" },
+  { value: "finance", label: "Finance" },
+  { value: "management", label: "Management" },
+] as const;
+
+/** Older roles kept so existing accounts still display correctly. */
+const LEGACY_ROLES = [
+  { value: "engineer", label: "Engineer" },
   { value: "qc", label: "QC" },
   { value: "viewer", label: "Viewer" },
 ] as const;
 
-export type Role = (typeof ROLES)[number]["value"];
+export type Role = (typeof ROLES)[number]["value"] | (typeof LEGACY_ROLES)[number]["value"];
 
 export const ROLE_LABEL: Record<string, string> = Object.fromEntries(
-  ROLES.map((r) => [r.value, r.label]),
+  [...ROLES, ...LEGACY_ROLES].map((r) => [r.value, r.label]),
 );
 
 export function formatDate(value?: string | null) {
