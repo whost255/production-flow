@@ -47,11 +47,13 @@ const has = (roles: Role[] | undefined, ...allowed: Role[]) =>
 
 export const perms = {
   isAdmin: (r?: Role[]) => has(r, "admin"),
+  isPending: (r?: Role[]) => (r ?? []).length === 0 || (r ?? []).every((x) => x === "pending"),
   canCreateProject: (r?: Role[]) => has(r, "admin", "project_manager"),
-  canConfigure: (r?: Role[]) => has(r, "admin", "project_manager", "engineer"),
+  canConfigure: (r?: Role[]) => has(r, "admin", "project_manager", "engineer", "estimator"),
   canUpdateProduction: (r?: Role[]) =>
     has(r, "admin", "project_manager", "engineer", "production", "qc"),
-  canExport: (r?: Role[]) => has(r, "admin", "project_manager", "engineer", "qc"),
+  canExport: (r?: Role[]) =>
+    has(r, "admin", "project_manager", "engineer", "qc", "estimator", "procurement", "finance", "management"),
   canChangeProjectStatus: (r?: Role[]) => has(r, "admin", "project_manager"),
   isQcOnly: (r?: Role[]) => (r ?? []).length > 0 && (r ?? []).every((x) => x === "qc"),
 };

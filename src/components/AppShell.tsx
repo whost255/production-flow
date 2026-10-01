@@ -276,7 +276,19 @@ export function AppShell({
               </DropdownMenu>
             </div>
           </header>
-          <div className="px-4 pb-12 lg:px-8">{children}</div>
+          <div className="px-4 pb-12 lg:px-8">
+            {me && perms.isPending(me.roles) && pathname !== "/profile" && pathname !== "/settings" ? (
+              <GlassPanel className="mx-auto mt-6 max-w-lg p-8 text-center">
+                <h2 className="font-display text-lg font-bold">Awaiting access</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Your account was created successfully. An administrator needs to assign your role
+                  before you can open projects and production data.
+                </p>
+              </GlassPanel>
+            ) : (
+              children
+            )}
+          </div>
         </main>
       </div>
     </div>

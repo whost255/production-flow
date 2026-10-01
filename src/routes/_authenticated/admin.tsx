@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -18,18 +18,22 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { logAudit, perms, useMe } from "@/lib/auth";
-import { ROLES, ROLE_LABEL, formatDateTime } from "@/lib/domain";
+import { ROLES, ROLE_LABEL, formatDate, formatDateTime } from "@/lib/domain";
 import { useProfiles } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  beforeLoad: async () => {
+    const { data } = await supabase.rpc("is_admin");
+    if (!data) throw redirect({ to: "/dashboard" });
+  },
   head: () => ({
     meta: [
-      { title: "Admin — Production Tracker" },
+      { title: "User Management — Production Tracker" },
       {
         name: "description",
         content: "Manage users and roles, review system totals and read the audit log.",
       },
-      { property: "og:title", content: "Admin — Production Tracker" },
+      { property: "og:title", content: "User Management — Production Tracker" },
       {
         property: "og:description",
         content: "Manage users and roles, review system totals and read the audit log.",
@@ -38,6 +42,31 @@ export const Route = createFileRoute("/_authenticated/admin")({
   }),
   component: Admin,
 });
+
+function RoleSelect({
+  value,
+  disabled,
+  onChange,
+}: {
+  value: string;
+  disabled?: boolean;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <Select value={value} onValueChange={onChange} disabled={disabled}>
+      <SelectTrigger className="h-10 w-full text-sm lg:h-8 lg:w-48 lg:text-xs">
+        <SelectValue>{ROLE_LABEL[value] ?? value}</SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        {ROLES.map((r) => (
+          <SelectItem key={r.value} value={r.value}>
+            {r.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
@@ -161,55 +190,94 @@ function Admin() {
                 <Skeleton className="h-48 w-full rounded-2xl" />
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left">
-                      {["User", "Email", "Role", "Last login", "Active"].map((h) => (
-                        <th key={h} className="border-b px-4 py-3 text-[11px] tracking-wider uppercase">
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.map((u) => (
-                      <tr key={u.id} className="hover:bg-muted/40">
-                        <td className="border-b px-4 py-2 font-medium">{u.full_name || "—"}</td>
-                        <td className="border-b px-4 py-2">{u.email}</td>
-                        <td className="border-b px-4 py-2">
-                          <Select
-                            value={u.roles[0] ?? "viewer"}
-                            onValueChange={(v) => setRole(u.id, v, u.full_name || u.email)}
+              <>
+                {/* Mobile / tablet cards */}
+                <ul className="divide-y lg:hidden">
+                  {filteredUsers.map((u) => {
+                    const self = u.id === me?.id;
+                    const name = u.full_name || u.email;
+                    return (
+                      <li key={u.id} className="space-y-3 p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate font-medium">{u.full_name || "—"}</p>
+                            <p className="truncate text-xs text-muted-foreground">{u.email}</p>
+                            <p className="mt-1 text-[11px] text-muted-foreground">
+                              Created {formatDate(u.created_at)}
+                            </p>
+                          </div>
+                          <span
+                            className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${u.is_active ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}
                           >
-                            <SelectTrigger className="h-8 w-40 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {ROLES.map((r) => (
-                                <SelectItem key={r.value} value={r.value}>
-                                  {r.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </td>
-                        <td className="border-b px-4 py-2 whitespace-nowrap">
-                          {formatDateTime(u.last_login_at)}
-                        </td>
-                        <td className="border-b px-4 py-2">
+                            {u.is_active ? "Active" : "Disabled"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <RoleSelect
+                            value={u.roles[0] ?? "pending"}
+                            disabled={self}
+                            onChange={(v) => setRole(u.id, v, name)}
+                          />
                           <Switch
                             checked={u.is_active}
-                            onCheckedChange={(checked) =>
-                              setActive(u.id, checked, u.full_name || u.email)
-                            }
+                            disabled={self}
+                            aria-label="Account active"
+                            onCheckedChange={(c) => setActive(u.id, c, name)}
                           />
-                        </td>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {/* Desktop table */}
+                <div className="hidden lg:block">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left">
+                        {["User", "Email", "Role", "Status", "Created", "Last login", "Actions"].map((h) => (
+                          <th key={h} className="border-b px-4 py-3 text-[11px] tracking-wider uppercase">
+                            {h}
+                          </th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {filteredUsers.map((u) => {
+                        const self = u.id === me?.id;
+                        const name = u.full_name || u.email;
+                        return (
+                          <tr key={u.id} className="hover:bg-muted/40">
+                            <td className="border-b px-4 py-2 font-medium">
+                              {u.full_name || "—"} {self && <span className="text-xs text-muted-foreground">(you)</span>}
+                            </td>
+                            <td className="border-b px-4 py-2">{u.email}</td>
+                            <td className="border-b px-4 py-2">
+                              <RoleSelect
+                                value={u.roles[0] ?? "pending"}
+                                disabled={self}
+                                onChange={(v) => setRole(u.id, v, name)}
+                              />
+                            </td>
+                            <td className="border-b px-4 py-2">{u.is_active ? "Active" : "Disabled"}</td>
+                            <td className="border-b px-4 py-2 whitespace-nowrap">{formatDate(u.created_at)}</td>
+                            <td className="border-b px-4 py-2 whitespace-nowrap">
+                              {formatDateTime(u.last_login_at)}
+                            </td>
+                            <td className="border-b px-4 py-2">
+                              <Switch
+                                checked={u.is_active}
+                                disabled={self}
+                                aria-label="Account active"
+                                onCheckedChange={(c) => setActive(u.id, c, name)}
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </GlassPanel>
         </TabsContent>
