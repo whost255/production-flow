@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 import { AppShell, GlassPanel } from "@/components/AppShell";
 import { ProgressBar, ProjectStatusBadge } from "@/components/StatusBadge";
@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { perms, useMe } from "@/lib/auth";
+
 import { PROJECT_STATUSES, countryLabel, formatDate } from "@/lib/domain";
 import { useProjects } from "@/lib/queries";
 
@@ -39,7 +39,6 @@ export const Route = createFileRoute("/_authenticated/projects/")({
 const PAGE_SIZE = 9;
 
 function ProjectsPage() {
-  const { data: me } = useMe();
   const { data, isLoading } = useProjects();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
