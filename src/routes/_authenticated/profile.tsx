@@ -16,7 +16,10 @@ export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
     meta: [
       { title: "My Profile — Production Tracker" },
-      { name: "description", content: "Your account details, role and recent production activity." },
+      {
+        name: "description",
+        content: "Your account details, role and recent production activity.",
+      },
       { property: "og:title", content: "My Profile — Production Tracker" },
       {
         property: "og:description",
@@ -84,10 +87,7 @@ function Profile() {
             </div>
             <div className="space-y-2">
               <Label>Access</Label>
-              <Input
-                value="Full access"
-                disabled
-              />
+              <Input value="Full access" disabled />
             </div>
             <div className="space-y-2">
               <Label>Last login</Label>

@@ -115,9 +115,7 @@ function Settings() {
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Access</dt>
-              <dd className="font-medium">
-                Full access
-              </dd>
+              <dd className="font-medium">Full access</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Account status</dt>
@@ -126,7 +124,6 @@ function Settings() {
           </dl>
           <p className="mt-4 rounded-xl bg-muted px-3 py-2 text-xs text-muted-foreground">
             Every signed-in user can view and update all projects, production, history and exports.
-
           </p>
         </GlassPanel>
 
