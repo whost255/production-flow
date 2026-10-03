@@ -83,9 +83,9 @@ function Profile() {
               <Input value={me?.email ?? ""} disabled />
             </div>
             <div className="space-y-2">
-              <Label>Role</Label>
+              <Label>Access</Label>
               <Input
-                value={(me?.roles ?? []).map((r) => ROLE_LABEL[r]).join(", ") || "No role"}
+                value="Full access"
                 disabled
               />
             </div>

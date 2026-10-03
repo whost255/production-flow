@@ -208,7 +208,7 @@ export function AppShell({
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{me?.fullName || me?.email}</p>
               <p className="text-[11px] text-muted-foreground">
-                {me?.roles.map((r) => ROLE_LABEL[r]).join(", ") || "No role"}
+                Full access
               </p>
             </div>
           </Link>
