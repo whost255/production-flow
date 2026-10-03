@@ -207,9 +207,7 @@ export function AppShell({
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{me?.fullName || me?.email}</p>
-              <p className="text-[11px] text-muted-foreground">
-                {me?.roles.map((r) => ROLE_LABEL[r]).join(", ") || "No role"}
-              </p>
+              <p className="text-[11px] text-muted-foreground">Full access</p>
             </div>
           </Link>
         </aside>
@@ -277,7 +275,10 @@ export function AppShell({
             </div>
           </header>
           <div className="px-4 pb-12 lg:px-8">
-            {me && perms.isPending(me.roles) && pathname !== "/profile" && pathname !== "/settings" ? (
+            {me &&
+            perms.isPending(me.roles) &&
+            pathname !== "/profile" &&
+            pathname !== "/settings" ? (
               <GlassPanel className="mx-auto mt-6 max-w-lg p-8 text-center">
                 <h2 className="font-display text-lg font-bold">Awaiting access</h2>
                 <p className="mt-2 text-sm text-muted-foreground">
@@ -295,13 +296,7 @@ export function AppShell({
   );
 }
 
-export function GlassPanel({
-  className,
-  children,
-}: {
-  className?: string;
-  children: ReactNode;
-}) {
+export function GlassPanel({ className, children }: { className?: string; children: ReactNode }) {
   return (
     <section
       className={cn("glass relative overflow-hidden rounded-3xl border border-card", className)}

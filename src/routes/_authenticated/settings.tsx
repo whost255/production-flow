@@ -114,10 +114,8 @@ function Settings() {
               <dd className="font-medium">{me?.email}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">Role</dt>
-              <dd className="font-medium">
-                {(me?.roles ?? []).map((r) => ROLE_LABEL[r]).join(", ") || "No role"}
-              </dd>
+              <dt className="text-muted-foreground">Access</dt>
+              <dd className="font-medium">Full access</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Account status</dt>
@@ -125,8 +123,7 @@ function Settings() {
             </div>
           </dl>
           <p className="mt-4 rounded-xl bg-muted px-3 py-2 text-xs text-muted-foreground">
-            Roles are set by an administrator and enforced on the server, so what you can change is
-            always the same on every device.
+            Every signed-in user can view and update all projects, production, history and exports.
           </p>
         </GlassPanel>
 

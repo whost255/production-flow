@@ -16,7 +16,10 @@ export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
     meta: [
       { title: "My Profile — Production Tracker" },
-      { name: "description", content: "Your account details, role and recent production activity." },
+      {
+        name: "description",
+        content: "Your account details, role and recent production activity.",
+      },
       { property: "og:title", content: "My Profile — Production Tracker" },
       {
         property: "og:description",
@@ -83,11 +86,8 @@ function Profile() {
               <Input value={me?.email ?? ""} disabled />
             </div>
             <div className="space-y-2">
-              <Label>Role</Label>
-              <Input
-                value={(me?.roles ?? []).map((r) => ROLE_LABEL[r]).join(", ") || "No role"}
-                disabled
-              />
+              <Label>Access</Label>
+              <Input value="Full access" disabled />
             </div>
             <div className="space-y-2">
               <Label>Last login</Label>

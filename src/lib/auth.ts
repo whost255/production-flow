@@ -45,17 +45,18 @@ export function useMe() {
 const has = (roles: Role[] | undefined, ...allowed: Role[]) =>
   (roles ?? []).some((r) => allowed.includes(r));
 
+// Roles are no longer used: every signed-in user has full access.
+void has;
+const all = (_r?: Role[]) => true;
 export const perms = {
-  isAdmin: (r?: Role[]) => has(r, "admin"),
-  isPending: (r?: Role[]) => (r ?? []).length === 0 || (r ?? []).every((x) => x === "pending"),
-  canCreateProject: (r?: Role[]) => has(r, "admin", "project_manager"),
-  canConfigure: (r?: Role[]) => has(r, "admin", "project_manager", "engineer", "estimator"),
-  canUpdateProduction: (r?: Role[]) =>
-    has(r, "admin", "project_manager", "engineer", "production", "qc"),
-  canExport: (r?: Role[]) =>
-    has(r, "admin", "project_manager", "engineer", "qc", "estimator", "procurement", "finance", "management"),
-  canChangeProjectStatus: (r?: Role[]) => has(r, "admin", "project_manager"),
-  isQcOnly: (r?: Role[]) => (r ?? []).length > 0 && (r ?? []).every((x) => x === "qc"),
+  isAdmin: (_r?: Role[]) => false, // hides role management UI
+  isPending: (_r?: Role[]) => false,
+  canCreateProject: all,
+  canConfigure: all,
+  canUpdateProduction: all,
+  canExport: all,
+  canChangeProjectStatus: all,
+  isQcOnly: (_r?: Role[]) => false,
 };
 
 export async function logAudit(action: string, description: string, projectId?: string) {
