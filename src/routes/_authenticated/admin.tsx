@@ -53,7 +53,7 @@ function RoleSelect({
   onChange: (v: string) => void;
 }) {
   return (
-    <Select value={value} onValueChange={onChange} disabled={disabled}>
+    <Select value={value} onValueChange={onChange} disabled={!!disabled}>
       <SelectTrigger className="h-10 w-full text-sm lg:h-8 lg:w-48 lg:text-xs">
         <SelectValue>{ROLE_LABEL[value] ?? value}</SelectValue>
       </SelectTrigger>
