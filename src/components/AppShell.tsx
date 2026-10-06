@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BarChart3,
   Bell,
+  Bot,
   FileSpreadsheet,
   Folders,
   Gauge,
@@ -38,6 +39,7 @@ const NAV = [
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/history", label: "History", icon: History },
   { to: "/exports", label: "Exports", icon: FileSpreadsheet },
+  { to: "/assistant", label: "AI Assistant", icon: Bot },
 ] as const;
 
 function initials(name: string, email: string) {
