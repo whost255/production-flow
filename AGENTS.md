@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep authenticated multi-chat AI conversations in user-scoped Cloud tables and serve model/tool calls through an authenticated TanStack streaming route, so transcripts persist and production lookups obey row-level access.
