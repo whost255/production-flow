@@ -276,7 +276,6 @@ function ChatThread({ threadId, initialMessages, onMessagesChanged }: {
               aria-label={busy ? "Stop response" : "Send message"}
               status={chat.status}
               onStop={chat.stop}
-              disabled={!busy && !chat.messages.at(-1)?.parts.some((part) => part.type === "text" && part.text.trim())}
               className="shrink-0"
             >
               {busy ? <Square className="size-3.5 fill-current" /> : <Send className="size-4" />}
@@ -304,7 +303,8 @@ export function AssistantWorkspace({ activeThreadId }: { activeThreadId?: string
     queryKey: ["assistant-messages", activeThreadId],
     enabled: Boolean(activeThreadId),
     queryFn: async () => {
-      const { data, error } = await supabase.from("chat_messages").select("message_id,role,parts").eq("thread_id", activeThreadId!).order("created_at", { ascending: true });
+      if (!activeThreadId) return [];
+      const { data, error } = await supabase.from("chat_messages").select("message_id,role,parts").eq("thread_id", activeThreadId).order("created_at", { ascending: true });
       if (error) throw error;
       return (data ?? []).map((row) => ({ id: row.message_id, role: row.role, parts: row.parts })) as UIMessage[];
     },
