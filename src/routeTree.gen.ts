@@ -22,6 +22,8 @@ import { Route as AuthenticatedProductionRouteImport } from './routes/_authentic
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
+import { Route as AuthenticatedAssistantIndexRouteImport } from './routes/_authenticated/assistant.index'
+import { Route as AuthenticatedAssistantThreadIdRouteImport } from './routes/_authenticated/assistant.$threadId'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects.index'
 import { Route as AuthenticatedProjectsNewRouteImport } from './routes/_authenticated/projects.new'
 import { Route as AuthenticatedProjectsProjectIdIndexRouteImport } from './routes/_authenticated/projects.$projectId.index'
@@ -92,6 +94,18 @@ const ApiAssistantRoute = ApiAssistantRouteImport.update({
   path: '/api/assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAssistantIndexRoute =
+  AuthenticatedAssistantIndexRouteImport.update({
+    id: '/assistant/',
+    path: '/assistant/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAssistantThreadIdRoute =
+  AuthenticatedAssistantThreadIdRouteImport.update({
+    id: '/assistant/$threadId',
+    path: '/assistant/$threadId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProjectsIndexRoute =
   AuthenticatedProjectsIndexRouteImport.update({
     id: '/projects/',
@@ -136,7 +150,9 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/projects/new': typeof AuthenticatedProjectsNewRoute
+  '/assistant/': typeof AuthenticatedAssistantIndexRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
   '/projects/$projectId/panels': typeof AuthenticatedProjectsProjectIdPanelsRoute
   '/projects/$projectId/production': typeof AuthenticatedProjectsProjectIdProductionRoute
@@ -155,7 +171,9 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/projects/new': typeof AuthenticatedProjectsNewRoute
+  '/assistant': typeof AuthenticatedAssistantIndexRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
   '/projects/$projectId/panels': typeof AuthenticatedProjectsProjectIdPanelsRoute
   '/projects/$projectId/production': typeof AuthenticatedProjectsProjectIdProductionRoute
@@ -176,7 +194,9 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/api/assistant': typeof ApiAssistantRoute
+  '/_authenticated/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/_authenticated/projects/new': typeof AuthenticatedProjectsNewRoute
+  '/_authenticated/assistant/': typeof AuthenticatedAssistantIndexRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
   '/_authenticated/projects/$projectId/panels': typeof AuthenticatedProjectsProjectIdPanelsRoute
   '/_authenticated/projects/$projectId/production': typeof AuthenticatedProjectsProjectIdProductionRoute
@@ -197,7 +217,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/api/assistant'
+    | '/assistant/$threadId'
     | '/projects/new'
+    | '/assistant/'
     | '/projects/'
     | '/projects/$projectId/panels'
     | '/projects/$projectId/production'
@@ -216,7 +238,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/api/assistant'
+    | '/assistant/$threadId'
     | '/projects/new'
+    | '/assistant'
     | '/projects'
     | '/projects/$projectId/panels'
     | '/projects/$projectId/production'
@@ -236,7 +260,9 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/api/assistant'
+    | '/_authenticated/assistant/$threadId'
     | '/_authenticated/projects/new'
+    | '/_authenticated/assistant/'
     | '/_authenticated/projects/'
     | '/_authenticated/projects/$projectId/panels'
     | '/_authenticated/projects/$projectId/production'
@@ -344,6 +370,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/assistant/': {
+      id: '/_authenticated/assistant/'
+      path: '/assistant'
+      fullPath: '/assistant/'
+      preLoaderRoute: typeof AuthenticatedAssistantIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/assistant/$threadId': {
+      id: '/_authenticated/assistant/$threadId'
+      path: '/assistant/$threadId'
+      fullPath: '/assistant/$threadId'
+      preLoaderRoute: typeof AuthenticatedAssistantThreadIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/projects/': {
       id: '/_authenticated/projects/'
       path: '/projects'
@@ -391,7 +431,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedAssistantThreadIdRoute: typeof AuthenticatedAssistantThreadIdRoute
   AuthenticatedProjectsNewRoute: typeof AuthenticatedProjectsNewRoute
+  AuthenticatedAssistantIndexRoute: typeof AuthenticatedAssistantIndexRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
   AuthenticatedProjectsProjectIdPanelsRoute: typeof AuthenticatedProjectsProjectIdPanelsRoute
   AuthenticatedProjectsProjectIdProductionRoute: typeof AuthenticatedProjectsProjectIdProductionRoute
@@ -407,7 +449,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProductionRoute: AuthenticatedProductionRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedAssistantThreadIdRoute: AuthenticatedAssistantThreadIdRoute,
   AuthenticatedProjectsNewRoute: AuthenticatedProjectsNewRoute,
+  AuthenticatedAssistantIndexRoute: AuthenticatedAssistantIndexRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
   AuthenticatedProjectsProjectIdPanelsRoute:
     AuthenticatedProjectsProjectIdPanelsRoute,

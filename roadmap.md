@@ -1,0 +1,3 @@
+- [x] Build authenticated chat API, data tools, and user-scoped chat persistence.
+- [x] Add responsive multi-chat interface with route-based thread IDs and conversation controls.
+- [ ] Verify assistant page, chat persistence controls, and a live data-backed response in the preview.
