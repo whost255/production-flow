@@ -297,7 +297,7 @@ function buildTools(db: DB) {
           .sort((a, b) => (a.set ?? 0) - (b.set ?? 0) || String(a.panel).localeCompare(String(b.panel)));
 
         return {
-          filters: { project: project ? projectRows[0].code : "all accessible", set_number, panel, stage: stageVal, status: statusVal },
+          filters: { project: project ? projectRows[0]?.code ?? project : "all accessible", set_number, panel, stage: stageVal, status: statusVal },
           total_matching_records: filtered.length,
           overall_status_counts: countStatuses(base),
           progress_percent: pct(base),
