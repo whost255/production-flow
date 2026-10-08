@@ -129,15 +129,16 @@ function ThreadList({
                 </div>
               ) : (
                 <>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => onOpen(thread.id)}
-                    className="flex min-w-0 flex-1 items-center gap-2 py-2.5 pl-2 text-left text-sm"
+                    className="h-10 min-w-0 flex-1 justify-start gap-2 px-2 text-left text-sm font-normal"
                     aria-current={activeId === thread.id ? "page" : undefined}
                   >
                     {thread.pinned ? <Pin className="size-3.5 shrink-0 text-primary" /> : <MessageSquare className="size-3.5 shrink-0 text-muted-foreground" />}
                     <span className="truncate">{thread.title}</span>
-                  </button>
+                  </Button>
                   <div className="flex shrink-0 items-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
                     <Button size="icon" variant="ghost" aria-label={thread.pinned ? "Unpin chat" : "Pin chat"} title={thread.pinned ? "Unpin" : "Pin"} onClick={() => onPin(thread)}>
                       {thread.pinned ? <PinOff className="size-3.5" /> : <Pin className="size-3.5" />}
@@ -236,7 +237,7 @@ function ChatThread({ threadId, initialMessages, onMessagesChanged }: {
               </Message>
             ))
           )}
-          {chat.status === "submitted" && (
+          {(chat.status === "submitted" || (chat.status === "streaming" && !chat.messages.at(-1)?.parts.some((part) => part.type === "text" && part.text.trim()))) && (
             <div className="flex items-center gap-2 pl-1 text-sm text-muted-foreground" role="status">
               <span className="size-2 animate-pulse rounded-full bg-primary" /> Checking your project data…
             </div>
