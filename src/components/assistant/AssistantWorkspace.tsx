@@ -4,8 +4,8 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useChat } from "@ai-sdk/react";
 import { useNavigate } from "@tanstack/react-router";
 import {
-  Bot, Check, Clock3, MessageSquare, MoreHorizontal, Pin, PinOff, Plus, Send,
-  Square, Trash2, X,
+  Bot, Check, MessageSquare, MoreHorizontal, Pin, PinOff, Plus, Send, Square,
+  Trash2, X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Conversation, ConversationContent, ConversationEmptyState,
 } from "@/components/ai-elements/conversation";
@@ -156,9 +155,6 @@ function ThreadList({
           ))}
         </div>
       </ScrollArea>
-      <div className="flex items-center gap-2 border-t border-border/70 px-4 py-3 text-xs text-muted-foreground">
-        <Clock3 className="size-3.5" /> Saved to your account
-      </div>
     </div>
   );
 }
@@ -193,7 +189,7 @@ function ChatThread({ threadId, initialMessages, onMessagesChanged }: {
             <ConversationEmptyState
               icon={<div className="grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary"><Bot className="size-7" /></div>}
               title="What would you like to know?"
-              description="Ask about a project, a set, a panel, or production progress."
+              description=""
             >
               <div className="flex flex-col items-center gap-4">
                 <div className="grid gap-2 text-left sm:grid-cols-2">
@@ -408,8 +404,8 @@ export function AssistantWorkspace({ activeThreadId }: { activeThreadId?: string
           <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
             <div className="grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary"><Bot className="size-7" /></div>
             <div className="space-y-1">
-              <h3 className="font-display text-lg font-semibold">Your production data, in conversation</h3>
-              <p className="max-w-md text-sm text-muted-foreground">Start a chat to ask about project progress, sets, panels, or recent changes.</p>
+              <h3 className="font-display text-lg font-semibold">Production Assistant</h3>
+              <p className="max-w-md text-sm text-muted-foreground">Start a conversation</p>
             </div>
             <Button onClick={() => void createThread()}><Plus className="mr-2 size-4" />Start a chat</Button>
           </div>
