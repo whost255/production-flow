@@ -63,7 +63,7 @@ function ThreadList({
   threads, activeId, loading, onCreate, onOpen, onPin, onDelete, onRename,
 }: {
   threads: Thread[];
-  activeId?: string;
+  activeId: string | undefined;
   loading: boolean;
   onCreate: () => void;
   onOpen: (id: string) => void;
@@ -220,10 +220,15 @@ function ChatThread({ threadId, initialMessages, onMessagesChanged }: {
                     );
                     if (part.type.startsWith("tool-") || part.type === "dynamic-tool") {
                       const toolPart = part as ToolPart;
-                      const name = toolPart.type === "dynamic-tool" ? toolPart.toolName : toolPart.type.slice(5);
+                      const dynamic = toolPart.type === "dynamic-tool";
+                      const name = dynamic ? toolPart.toolName : toolPart.type.slice(5);
                       return (
                         <Tool key={`${message.id}-tool-${index}`} defaultOpen={false}>
-                          <ToolHeader type={toolPart.type} state={toolPart.state} {...(toolPart.type === "dynamic-tool" ? { toolName: toolPart.toolName } : {})} title={toolTitles[name] ?? "Looking up information"} />
+                          {dynamic ? (
+                            <ToolHeader type="dynamic-tool" toolName={toolPart.toolName} state={toolPart.state} title={toolTitles[name] ?? "Looking up information"} />
+                          ) : (
+                            <ToolHeader type={toolPart.type} state={toolPart.state} title={toolTitles[name] ?? "Looking up information"} />
+                          )}
                           <ToolContent>
                             <ToolInput input={toolPart.input} />
                             <ToolOutput output={toolPart.output} errorText={toolPart.errorText} />
