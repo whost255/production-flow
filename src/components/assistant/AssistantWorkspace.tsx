@@ -4,8 +4,8 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useChat } from "@ai-sdk/react";
 import { useNavigate } from "@tanstack/react-router";
 import {
-  Bot, Check, Clock3, MessageSquare, MoreHorizontal, Pin, PinOff, Plus, Send,
-  Square, Trash2, X,
+  Bot, Check, MessageSquare, MoreHorizontal, Pin, PinOff, Plus, Send, Square,
+  Trash2, X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Conversation, ConversationContent, ConversationEmptyState,
 } from "@/components/ai-elements/conversation";
@@ -64,7 +63,7 @@ function ThreadList({
   threads, activeId, loading, onCreate, onOpen, onPin, onDelete, onRename,
 }: {
   threads: Thread[];
-  activeId?: string;
+  activeId: string | undefined;
   loading: boolean;
   onCreate: () => void;
   onOpen: (id: string) => void;
@@ -130,15 +129,16 @@ function ThreadList({
                 </div>
               ) : (
                 <>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => onOpen(thread.id)}
-                    className="flex min-w-0 flex-1 items-center gap-2 py-2.5 pl-2 text-left text-sm"
+                    className="h-10 min-w-0 flex-1 justify-start gap-2 px-2 text-left text-sm font-normal"
                     aria-current={activeId === thread.id ? "page" : undefined}
                   >
                     {thread.pinned ? <Pin className="size-3.5 shrink-0 text-primary" /> : <MessageSquare className="size-3.5 shrink-0 text-muted-foreground" />}
                     <span className="truncate">{thread.title}</span>
-                  </button>
+                  </Button>
                   <div className="flex shrink-0 items-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100">
                     <Button size="icon" variant="ghost" aria-label={thread.pinned ? "Unpin chat" : "Pin chat"} title={thread.pinned ? "Unpin" : "Pin"} onClick={() => onPin(thread)}>
                       {thread.pinned ? <PinOff className="size-3.5" /> : <Pin className="size-3.5" />}
@@ -156,9 +156,6 @@ function ThreadList({
           ))}
         </div>
       </ScrollArea>
-      <div className="flex items-center gap-2 border-t border-border/70 px-4 py-3 text-xs text-muted-foreground">
-        <Clock3 className="size-3.5" /> Saved to your account
-      </div>
     </div>
   );
 }
@@ -172,7 +169,22 @@ function ChatThread({ threadId, initialMessages, onMessagesChanged }: {
   const chat = useChat({
     id: threadId,
     messages: initialMessages,
-    transport: useMemo(() => new DefaultChatTransport({ api: "/api/assistant", body: { threadId } }), [threadId]),
+    transport: useMemo(
+      () =>
+        new DefaultChatTransport({
+          api: "/api/assistant",
+          body: { threadId },
+          fetch: async (input, init) => {
+            const { data } = await supabase.auth.getSession();
+            const headers = new Headers(init?.headers);
+            if (data.session?.access_token) {
+              headers.set("Authorization", `Bearer ${data.session.access_token}`);
+            }
+            return fetch(input, { ...init, headers });
+          },
+        }),
+      [threadId],
+    ),
     onError: (error) => toast.error(readableError(error)),
     onFinish: () => {
       onMessagesChanged();
@@ -193,7 +205,7 @@ function ChatThread({ threadId, initialMessages, onMessagesChanged }: {
             <ConversationEmptyState
               icon={<div className="grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary"><Bot className="size-7" /></div>}
               title="What would you like to know?"
-              description="Ask about a project, a set, a panel, or production progress."
+              description=""
             >
               <div className="flex flex-col items-center gap-4">
                 <div className="grid gap-2 text-left sm:grid-cols-2">
@@ -223,10 +235,15 @@ function ChatThread({ threadId, initialMessages, onMessagesChanged }: {
                     );
                     if (part.type.startsWith("tool-") || part.type === "dynamic-tool") {
                       const toolPart = part as ToolPart;
-                      const name = toolPart.type === "dynamic-tool" ? toolPart.toolName : toolPart.type.slice(5);
+                      const dynamic = toolPart.type === "dynamic-tool";
+                      const name = dynamic ? toolPart.toolName : toolPart.type.slice(5);
                       return (
                         <Tool key={`${message.id}-tool-${index}`} defaultOpen={false}>
-                          <ToolHeader type={toolPart.type} state={toolPart.state} {...(toolPart.type === "dynamic-tool" ? { toolName: toolPart.toolName } : {})} title={toolTitles[name] ?? "Looking up information"} />
+                          {dynamic ? (
+                            <ToolHeader type="dynamic-tool" toolName={toolPart.toolName} state={toolPart.state} title={toolTitles[name] ?? "Looking up information"} />
+                          ) : (
+                            <ToolHeader type={toolPart.type} state={toolPart.state} title={toolTitles[name] ?? "Looking up information"} />
+                          )}
                           <ToolContent>
                             <ToolInput input={toolPart.input} />
                             <ToolOutput output={toolPart.output} errorText={toolPart.errorText} />
@@ -240,7 +257,7 @@ function ChatThread({ threadId, initialMessages, onMessagesChanged }: {
               </Message>
             ))
           )}
-          {chat.status === "submitted" && (
+          {(chat.status === "submitted" || (chat.status === "streaming" && !chat.messages.at(-1)?.parts.some((part) => part.type === "text" && part.text.trim()))) && (
             <div className="flex items-center gap-2 pl-1 text-sm text-muted-foreground" role="status">
               <span className="size-2 animate-pulse rounded-full bg-primary" /> Checking your project data…
             </div>
@@ -408,8 +425,8 @@ export function AssistantWorkspace({ activeThreadId }: { activeThreadId?: string
           <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
             <div className="grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary"><Bot className="size-7" /></div>
             <div className="space-y-1">
-              <h3 className="font-display text-lg font-semibold">Your production data, in conversation</h3>
-              <p className="max-w-md text-sm text-muted-foreground">Start a chat to ask about project progress, sets, panels, or recent changes.</p>
+              <h3 className="font-display text-lg font-semibold">Production Assistant</h3>
+              <p className="max-w-md text-sm text-muted-foreground">Start a conversation</p>
             </div>
             <Button onClick={() => void createThread()}><Plus className="mr-2 size-4" />Start a chat</Button>
           </div>

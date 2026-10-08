@@ -30,8 +30,9 @@ function json(status: number, error: string) {
 }
 
 function userClient(token: string): DB {
-  const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  const url = process.env["SUPABASE_URL"];
+  const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+  if (!url || !key) throw new Error("Application data access is unavailable.");
   return createClient<Database>(url, key, {
     global: {
       headers: { Authorization: `Bearer ${token}` },
@@ -62,7 +63,7 @@ function matchStatus(input?: string | null) {
   if (q === "na" || q === "n_a") return "not_applicable";
   if (q.includes("progress")) return "wip";
   if (q === "complete" || q === "done") return "completed";
-  return STATUS_VALUES.find((s) => s === q || STATUS_LABEL[s].toLowerCase() === input.toLowerCase()) ?? null;
+  return STATUS_VALUES.find((s) => s === q || (STATUS_LABEL[s] ?? s).toLowerCase() === input.toLowerCase()) ?? null;
 }
 
 async function resolveProject(db: DB, ref: string) {
@@ -219,13 +220,13 @@ function buildTools(db: DB) {
         let setIds: string[] | null = null;
         if (set_number != null) {
           setIds = sets.filter((s) => s.set_number === set_number).map((s) => s.id);
-          if (setIds.length === 0) return { error: `Set ${set_number} does not exist${project ? ` in ${projectRows[0].code}` : ""}.` };
+          if (setIds.length === 0) return { error: `Set ${set_number} does not exist${project ? ` in ${projectRows[0]?.code ?? project}` : ""}.` };
         }
         let panelIds: string[] | null = null;
         if (panel) {
           const q = panel.toLowerCase();
           panelIds = panels
-            .filter((p) => p.name.toLowerCase().includes(q) || p.part_number.toLowerCase().includes(q))
+            .filter((p) => p.name.toLowerCase().includes(q) || (p.part_number ?? "").toLowerCase().includes(q))
             .map((p) => p.id);
           if (panelIds.length === 0) return { error: `No panel matching "${panel}" exists.` };
         }
@@ -288,7 +289,7 @@ function buildTools(db: DB) {
             project: projById.get(r.project_id),
             set: setById.get(r.set_id),
             panel: panelById.get(r.panel_id)?.name,
-            part_number: panelById.get(r.panel_id)?.part_number,
+            part_number: panelById.get(r.panel_id)?.part_number ?? "",
             stage: STAGE_LABEL[r.stage] ?? r.stage,
             status: STATUS_LABEL[r.status] ?? r.status,
             last_updated: r.updated_at,
@@ -296,7 +297,7 @@ function buildTools(db: DB) {
           .sort((a, b) => (a.set ?? 0) - (b.set ?? 0) || String(a.panel).localeCompare(String(b.panel)));
 
         return {
-          filters: { project: project ? projectRows[0].code : "all accessible", set_number, panel, stage: stageVal, status: statusVal },
+          filters: { project: project ? projectRows[0]?.code ?? project : "all accessible", set_number, panel, stage: stageVal, status: statusVal },
           total_matching_records: filtered.length,
           overall_status_counts: countStatuses(base),
           progress_percent: pct(base),
@@ -368,7 +369,7 @@ export async function handleAssistantChat(request: Request) {
   const auth = request.headers.get("authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   if (!token || token.split(".").length !== 3) return json(401, "Please sign in again.");
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return json(500, "The AI assistant is not configured.");
 
   const db = userClient(token);
@@ -388,7 +389,8 @@ export async function handleAssistantChat(request: Request) {
   const { data: thread } = await db.from("chat_threads").select("id,title").eq("id", threadId).maybeSingle();
   if (!thread) return json(404, "This chat was not found.");
 
-  const last = messages[messages.length - 1];
+  const last = messages.at(-1);
+  if (!last) return json(400, "Invalid request.");
   if (last.role === "user") {
     const { error } = await db.from("chat_messages").upsert(
       { thread_id: threadId, user_id: userId, message_id: last.id, role: "user", parts: last.parts as never },
