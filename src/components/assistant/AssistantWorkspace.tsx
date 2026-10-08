@@ -169,7 +169,22 @@ function ChatThread({ threadId, initialMessages, onMessagesChanged }: {
   const chat = useChat({
     id: threadId,
     messages: initialMessages,
-    transport: useMemo(() => new DefaultChatTransport({ api: "/api/assistant", body: { threadId } }), [threadId]),
+    transport: useMemo(
+      () =>
+        new DefaultChatTransport({
+          api: "/api/assistant",
+          body: { threadId },
+          fetch: async (input, init) => {
+            const { data } = await supabase.auth.getSession();
+            const headers = new Headers(init?.headers);
+            if (data.session?.access_token) {
+              headers.set("Authorization", `Bearer ${data.session.access_token}`);
+            }
+            return fetch(input, { ...init, headers });
+          },
+        }),
+      [threadId],
+    ),
     onError: (error) => toast.error(readableError(error)),
     onFinish: () => {
       onMessagesChanged();
