@@ -30,8 +30,9 @@ function json(status: number, error: string) {
 }
 
 function userClient(token: string): DB {
-  const url = process.env["SUPABASE_URL"] ?? "";
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"] ?? "";
+  const url = process.env["SUPABASE_URL"];
+  const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+  if (!url || !key) throw new Error("Application data access is unavailable.");
   return createClient<Database>(url, key, {
     global: {
       headers: { Authorization: `Bearer ${token}` },
